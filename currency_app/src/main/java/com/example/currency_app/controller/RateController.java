@@ -9,9 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,7 +20,7 @@ public class RateController {
     private final RateService rateService;
 
     @GetMapping("/{date}")
-    public ResponseEntity<RateLoadingResult> getRatesByDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime date) {
+    public ResponseEntity<RateLoadingResult> getRatesByDate(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         List<Rate> rates = rateService.getRatesByDate(date);
         boolean isLoaded = !rates.isEmpty();
         RateLoadingResult result = new RateLoadingResult(date, isLoaded);
@@ -30,16 +28,10 @@ public class RateController {
     }
 
     @GetMapping("/{date}/{currency}")
-    public ResponseEntity<RateInfo> getRateByDateAndCurName(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime date, @PathVariable String currency) {
+    public ResponseEntity<RateInfo> getRateByDateAndCurName(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable String currency) {
         Rate rate = rateService.getRateByDateAndCurName(date, currency);
-        RateInfo rateInfo = new RateInfo(rate.getDate(), rate.getCurName(), rate.getCurOfficialRate());
+        RateInfo rateInfo = new RateInfo(rate.getCurID(),rate.getDate(), rate.getCurAbbreviation(), rate.getCurScale(), rate.getCurName(), rate.getCurOfficialRate());
         return ResponseEntity.ok(rateInfo);
-    }
-
-    @PostMapping
-    public ResponseEntity<Rate> createRate(@RequestBody Rate rate) {
-        rateService.saveRate(rate);
-        return ResponseEntity.status(HttpStatus.CREATED).body(rate);
     }
 
 

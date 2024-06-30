@@ -5,7 +5,6 @@ import com.example.currency_app.model.Rate;
 import com.example.currency_app.repository.RateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,8 +17,6 @@ public class RateServiceImpl implements RateService {
         this.webClient = webClientBuilder.baseUrl("https://api.nbrb.by").build();
         this.rateRepository = rateRepository;
     }
-
-    @Override
     public void syncRates() {
         List<RateInfo> rateInfos = webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -49,16 +46,17 @@ public class RateServiceImpl implements RateService {
         }
     }
 
-    public List<Rate> getRatesByDate(LocalDateTime date) {
-        return rateRepository.findByDate(date);
+    public List<Rate> getRatesByDate(LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        return rateRepository.findAllByDateBetween(startOfDay, endOfDay);
     }
 
-    public Rate getRateByDateAndCurName(LocalDateTime date, String currency) {
-        return rateRepository.findByDateAndCurName(date, currency)
-                .orElseThrow();
+
+    public Rate getRateByDateAndCurName(LocalDate date, String currency) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        return rateRepository.findByDateBetweenAndCurAbbreviation(startOfDay, endOfDay, currency);
     }
 
-    public void saveRate(Rate rate) {
-        rateRepository.save(rate);
-    }
 }

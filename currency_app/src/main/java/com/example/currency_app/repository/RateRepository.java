@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RateRepository extends JpaRepository<Rate, Long> {
-    List<Rate> findByDate(LocalDateTime date);
-    Optional<Rate> findByDateAndCurName(LocalDateTime date, String currency);
+    List<Rate> findAllByDateBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Rate findByDateBetweenAndCurAbbreviation(LocalDateTime startOfDay, LocalDateTime endOfDay, String currency);
+
 }

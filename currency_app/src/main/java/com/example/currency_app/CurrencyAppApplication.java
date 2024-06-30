@@ -11,13 +11,11 @@ import java.time.LocalDate;
 @SpringBootApplication
 public class CurrencyAppApplication {
 
-	// В классе, отвечающем за инициализацию приложения (например, в классе с аннотацией @SpringBootApplication)
 	@Autowired
 	private RateService rateService;
 
 	@PostConstruct
 	public void initRateData() {
-		// Загрузить все исторические данные
 		rateService.syncRates();
 	}
 	public static void main(String[] args) {
